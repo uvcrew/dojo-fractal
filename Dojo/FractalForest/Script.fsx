@@ -7,13 +7,15 @@ let width, height = 500, 500
 let form = new Form(Width = width, Height = height)
 let box = new PictureBox(BackColor = Color.White, Dock = DockStyle.Fill)
 let image = new Bitmap(width, height)
-let graphics = Graphics.FromImage(image)
+let graphics = Graphics.FromImage image
 //The following line produces higher quality images, 
 //at the expense of speed. Uncomment it if you want
 //more beautiful images, even if it's slower.
 //Thanks to https://twitter.com/AlexKozhemiakin for the tip!
 //graphics.SmoothingMode <- System.Drawing.Drawing2D.SmoothingMode.HighQuality
-let brush = new SolidBrush(Color.FromArgb(0, 0, 0))
+
+let background = Color.White
+let foreground = Brushes.Black
 
 box.Image <- image
 form.Controls.Add(box) 
@@ -40,7 +42,7 @@ let drawLine (target : Graphics) (brush : Brush)
     target.DrawLine(pen, origin, destination)
 
 let draw x y angle length width = 
-    drawLine graphics brush x y angle length width
+    drawLine graphics foreground x y angle length width
 
 let pi = Math.PI
 
@@ -52,7 +54,18 @@ let x, y = endpoint 250. 50. (pi*(0.5)) 100.
 draw x y (pi*(0.5 + 0.3)) 50. 2.
 draw x y (pi*(0.5 - 0.4)) 50. 2.
 
-form.ShowDialog()
+// once the form is displayed, you are still able to use it
+// via the FSI session. You just need to call form.Refresh()
+// in order to display any pending graphics
+form.Show()
+
+// here is a handy function to clear the form
+let clear() = 
+    graphics.Clear background
+    form.Refresh()
+
+
+
 
 (* To do a nice fractal tree, using recursion is
 probably a good idea. The following link might
